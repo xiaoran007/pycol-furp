@@ -1,35 +1,32 @@
+"""
+Modified by Xiaoran (FT)
+"""
+
 import copy
 import math
-from operator import itemgetter, ne
-from typing import overload
-from numpy.core.numerictypes import ScalarType
-from pandas import read_csv
-import numpy as np
-from numpy.core.fromnumeric import shape, transpose, var
-from scipy.sparse import data
+from operator import itemgetter
+
 import arff
-from scipy.spatial.kdtree import distance_matrix
-
-from sklearn.cluster import KMeans
-import sklearn
+import numpy as np
 import scipy.spatial
-
-import sys
+import sklearn
+from scipy.sparse import data
+from sklearn.cluster import KMeans
 
 np.random.seed(0)
 
 
 class Complexity:
-    '''
+    """
     Complexity class, it makes available the following methods to calculate complexity metrics:
     F1, F1v, F2, F3, F4, R_value, D3, CM, kDN, MRCA, C1, C2, T1, DBC, N1, N2, N3, N4, SI,
     LSC, purity, neighbourhood_seperability, input_noise, borderline, deg_overlap, ICSV, NSG and Clust
 
-    '''
+    """
 
     def __init__(self, file_name, meta, distance_func="default", file_type="arff"):
-        '''
-        Constructor method, setups up the the necessary class attributes to be
+        """
+        Constructor method, setups up the necessary class attributes to be
         used by the complexity measure functions.
         Starts by reading the file in arff format which contains the class samples X (self.X), class labels y (self.y) and contextual information
         about the features (self.meta).
@@ -42,8 +39,8 @@ class Complexity:
         distance_func (string): The distance function to be used to calculate the distance matrix. Only available option right now is "HEOM".
         file_type (string): The type of file where the dataset is stored. Only available option right now is "arff".
 
-        '''
-        if (file_type == "arff"):
+        """
+        if file_type == "arff":
             [X, y, meta] = self.__read_file(file_name, meta)
         else:
             print("Only arff files are available for now")
@@ -65,13 +62,13 @@ class Complexity:
         return
 
     def __count_class_instances(self):
-        '''
+        """
         Is called by the __init__ method.
         Count instances of each class in the dataset.
         --------
         Returns:
-        class_count (numpy.array): An (Nx1) array with the number of intances for each of the N classes in the dataset
-        '''
+        class_count (numpy.array): An (Nx1) array with the number of instances for each of the N classes in the dataset
+        """
         class_count = np.zeros(len(self.classes))
         for i in range(len(self.classes)):
             count = len(np.where(self.y == self.classes[i])[0])
@@ -79,7 +76,7 @@ class Complexity:
         return class_count
 
     def __read_file(self, file_name, meta):
-        '''
+        """
         Is called by the __init__ method.
         Read an arff file containing the dataset.
         --------
@@ -91,7 +88,7 @@ class Complexity:
         y (numpy.array): An array containing the class labels of all samples;
         meta (array): An array with information about the type of attributes (numerical or categorical)
         --------
-        '''
+        """
 
         f = arff.load(open(file_name, 'r'))
         data = f['data']
@@ -122,7 +119,7 @@ class Complexity:
         return [X, y, meta]
 
     def __distance_HEOM(self, X):
-        '''
+        """
         Is called by the calculate_distance_matrix method.
         Calculates the distance matrix between all pairs of points from an input matrix, using the HEOM metric, that way categorical attributes are
         allow in the dataset.
@@ -132,7 +129,7 @@ class Complexity:
         --------
         Returns:
         dist_matrix (numpy.array): A (M*M) matrix containing the distance between all pairs of points in X
-        '''
+        """
 
         meta = self.meta
 
@@ -150,15 +147,15 @@ class Complexity:
                 unnorm_dist = 0
                 for k in range(len(X[0])):
                     # missing value
-                    if (X[i][k] == None or X[j][k] == None):
+                    if X[i][k] is None or X[j][k] is None:
                         dist += 1
                         unnorm_dist += 1
                     # numerical
-                    if (meta[k] == 0):
+                    if meta[k] == 0:
                         # dist+=(abs(X[i][k]-X[j][k]))**2
 
                         # dist+=(abs(X[i][k]-X[j][k])/(range_max[k]-range_min[k]))**2
-                        if (range_max[k] - range_min[k] == 0):
+                        if range_max[k] - range_min[k] == 0:
                             dist += (abs(X[i][k] - X[j][k])) ** 2
                             unnorm_dist += (abs(X[i][k] - X[j][k])) ** 2
                         else:
@@ -166,8 +163,8 @@ class Complexity:
                             unnorm_dist += abs(X[i][k] - X[j][k])
                             # dist+=(abs(X[i][k]-X[j][k]))**2
                     # categorical
-                    if (meta[k] == 1):
-                        if (X[i][k] != X[j][k]):
+                    if meta[k] == 1:
+                        if X[i][k] != X[j][k]:
                             dist += 1
                             unnorm_dist += 1
 
@@ -180,7 +177,7 @@ class Complexity:
         return dist_matrix, unnorm_dist_matrix
 
     def __distance_HEOM_different_arrays(self, X, X2):
-        '''
+        """
         Calculates the distance matrix between all pairs of points from 2 input matrixes, using the HEOM metric, that way categorical attributes are
         allow in the dataset.
         --------
@@ -190,7 +187,7 @@ class Complexity:
         --------
         Returns:
         dist_matrix (numpy.array): A (M*M) matrix containing the distance between all pairs of points in X
-        '''
+        """
         meta = self.meta
 
         dist_matrix = np.zeros((len(X2), len(X)))
@@ -205,19 +202,19 @@ class Complexity:
                 dist = 0
                 for k in range(len(X2[0])):
                     # missing value
-                    if (X2[i][k] == None or X[j][k] == None):
+                    if X2[i][k] is None or X[j][k] is None:
                         dist += 1
                     # numerical
-                    if (meta[k] == 0):
+                    if meta[k] == 0:
 
-                        if (range_max[k] - range_min[k] == 0):
+                        if range_max[k] - range_min[k] == 0:
                             dist += (abs(X2[i][k] - X[j][k])) ** 2
                         else:
                             dist += (abs(X2[i][k] - X[j][k]) / (range_max[k] - range_min[k])) ** 2
 
                     # categorical
-                    if (meta[k] == 1):
-                        if (X2[i][k] != X[j][k]):
+                    if meta[k] == 1:
+                        if X2[i][k] != X[j][k]:
                             dist += 1
                 dist_matrix[i][j] = np.sqrt(dist)
 
@@ -225,7 +222,7 @@ class Complexity:
         return dist_matrix
 
     def __calculate_distance_matrix(self, X, distance_func="HEOM"):
-        '''
+        """
         Is called by the __init__ method.
         Function used to select which distance metric will be used to calculate the distance between a matrix of points.
         Only the HEOM metric is implemented for now, however if more metrics are added this function can easily be changed to
@@ -238,10 +235,12 @@ class Complexity:
         Returns:
         dist_matrix (numpy.array): A (M*M) matrix containing the distance between all pairs of points in X
         --------
-        '''
-        if (distance_func == "HEOM"):
+        """
+        if distance_func == "HEOM":
             distance_matrix, unnorm_distance_matrix = self.__distance_HEOM(X)
-        elif (distance_func == "default"):
+        elif distance_func == "default":
+            distance_matrix, unnorm_distance_matrix = self.__distance_HEOM(X)
+        else:
             distance_matrix, unnorm_distance_matrix = self.__distance_HEOM(X)
 
         # add other distance functions
@@ -249,7 +248,7 @@ class Complexity:
         return distance_matrix, unnorm_distance_matrix
 
     def __get_class_inxs(self):
-        '''
+        """
         Called by the __init__ method.
         Calculates what are the indexes in X and y for each of the classes.
         --------
@@ -257,7 +256,7 @@ class Complexity:
         class_inds (array): An array of arrays where each inner array contains the indexes for one class. The number of inner arrays is equal to the
         total number of unique classes in X.
         --------
-        '''
+        """
         class_inds = []
         for cls in self.classes:
             cls_ind = np.where(self.y == cls)[0]
@@ -265,7 +264,7 @@ class Complexity:
         return class_inds
 
     def __knn(self, inx, line, k, clear_diag=True):
-        '''
+        """
         Called by all the complexity metrics that need to calculate the nearest neighbours of a sample.
         Calculates the class labels of the k nearest neighbours of a sample x. If clear_diag is True, it is assumed that point in
         position "inx" is the sample x, which will have distance 0 to itself and so the distance is changed to infinite to avoid
@@ -281,9 +280,9 @@ class Complexity:
         count: An (n*1) array, where n is the number of unique class labels, where in each position is the value of how many of the k
         nearest neighbours belong to that class. For example if k=5 and there are 3 classes a possible configuration could be [2,3,0] meaning that 2
         of the neighbours are from the 1st class, 3 are from the second class, and there are none from the 3rd class.
-        '''
+        """
         count = np.zeros(len(self.classes))
-        if (clear_diag):
+        if clear_diag:
             line[inx] = math.inf
         for i in range(k):
             index = np.where(line == min(line))[0][0]
@@ -294,14 +293,14 @@ class Complexity:
 
         return count
 
-    def __hypersphere(self, inx, sigma, distance_matrix=[], y=[]):
-        '''
+    def __hypersphere(self, inx, sigma, distance_matrix=None, y=None):
+        """
         Called by the C1 and MRCA complexity measures.
         Draws an hypersphere of radius "sigma" and center on a sample x and calculates the number of samples that
         are from the same class as a sample "x" as well as the number of sample that are not from the same class.
         The sample will count itself as a instance of the same class inside the hypersphere.
         If no distance matrix or class label arrays are passed the function assumes uses the attributes of the complexity
-        class calcultated in the __init__ method.
+        class calculated in the __init__ method.
         --------
         Parameters:
         inx (int): Index of the sample x in the array X
@@ -314,12 +313,16 @@ class Complexity:
         n_minus (int): The number of instances that have a different class label than sample x
         n_plus (int): The number of instances that have the same class label than sample x
         --------
-        '''
+        """
 
-        if (len(distance_matrix) == 0):
+        if y is None:
+            y = []
+        if distance_matrix is None:
+            distance_matrix = []
+        if len(distance_matrix) == 0:
             distance_matrix = self.dist_matrix
 
-        if (len(y) == 0):
+        if len(y) == 0:
             y = self.y
 
         # an array containing the distance to all points
@@ -331,16 +334,16 @@ class Complexity:
             # if the sample is inside de hypersphere
 
             # print(line)
-            if (line[i] <= sigma):
+            if line[i] <= sigma:
                 # if the sample is from the same class as "x"
-                if (y[i] == y[inx]):
+                if y[i] == y[inx]:
                     n_plus += 1
                 else:
                     n_minus += 1
         return [n_minus, n_plus]
 
     def __hypersphere_sim(self, inx, sigma):
-        '''
+        """
         Called by C2 function.
         Similiar to the hypersphere function, however instead of calculating the number of samples that are from the same class and the number
         of samples that isn't, it calculates the sum of the distance from sample "x" to all samples of with the same class label and the sum of distance
@@ -354,22 +357,22 @@ class Complexity:
         n_minus: The sum of the distances from "x" to all the samples inside the hypersphere with a different class label
         n_plus: The sum of the distances from "x" to all the samples inside the hypersphere with the same class label
         --------
-        '''
+        """
         line = self.dist_matrix[inx]
         n_minus = 0
         n_plus = 0
         for i in range(len(line)):
             # if the sample is inside the hypersphere
-            if (line[i] <= sigma):
+            if line[i] <= sigma:
                 # if the sample is from the same class as "x"
-                if (self.y[i] == self.y[inx]):
+                if self.y[i] == self.y[inx]:
                     n_plus += line[i]
                 else:
                     n_minus += line[i]
         return [n_minus, n_plus]
 
     def R_value(self, k=5, theta=2):
-        '''
+        """
         Calculate the Augmented R value complexity measure defined in [1].
 
         --------
@@ -385,7 +388,7 @@ class Complexity:
         [1] Borsos Z, Lemnaru C, Potolea R (2018) Dealing with overlap and imbalance:
         a new metric and approach. Pattern Analysis and Applications 21(2):381-395
         --------
-        '''
+        """
         r_matrix = np.zeros((len(self.classes), len(self.classes)))
 
         for i in range(len(self.dist_matrix)):
@@ -396,7 +399,7 @@ class Complexity:
             cls_inx = np.where(self.classes == self.y[i])[0][0]
             for j in range(len(self.classes)):
                 # check if the threshold of neighbours is crossed
-                if (theta < count[j]):
+                if theta < count[j]:
                     r_matrix[cls_inx, j] += 1
 
         for i in range(len(r_matrix)):
@@ -409,7 +412,7 @@ class Complexity:
                 imbalanced_ratio = 0
                 maj_r = 0
                 min_r = 0
-                if (self.class_count[i] > self.class_count[j]):
+                if self.class_count[i] > self.class_count[j]:
                     imbalanced_ratio = self.class_count[j] / self.class_count[i]
                     maj_r = r_matrix[i, j]
                     min_r = r_matrix[j, i]
@@ -424,7 +427,7 @@ class Complexity:
         return r_values
 
     def D3_value(self, k=5):
-        '''
+        """
         Calculate the D3 value complexity measure defined in [1].
 
         --------
@@ -440,19 +443,19 @@ class Complexity:
         for pattern classication by means of data complexity measures. Inteligencia
         Articial Revista Iberoamericana de Inteligencia Artificial 10(29):31-38
         --------
-        '''
+        """
         d3_matrix = np.zeros(len(self.classes))
 
         for i in range(len(self.dist_matrix)):
             line = self.dist_matrix[i]
             count = self.__knn(i, copy.copy(line), k)
             cls_inx = np.where(self.classes == self.y[i])[0][0]
-            if (0.5 > (count[cls_inx] / k)):
+            if 0.5 > (count[cls_inx] / k):
                 d3_matrix[cls_inx] += 1
         return d3_matrix
 
     def kDN(self, k=5):
-        '''
+        """
         Calculate the kDN value complexity measure defined in [1]
 
         --------
@@ -467,7 +470,7 @@ class Complexity:
         [1] Smith MR, Martinez T, Giraud-Carrier C (2014) An instance level analysis
         of data complexity. Machine learning 95(2):225-256
         --------
-        '''
+        """
 
         kDN_value = 0
         for i in range(len(self.dist_matrix)):
@@ -479,7 +482,7 @@ class Complexity:
         return kDN_value
 
     def CM(self, k=5):
-        '''
+        """
         Calculate the CM value complexity measure defined in [1].
 
         -------
@@ -495,20 +498,20 @@ class Complexity:
         for classification problems with unbalanced data. Statistical Analysis and
         Data Mining: The ASA Data Science Journal 7(3):194-211
         -------
-        '''
+        """
         CM_value = 0
         for i in range(len(self.dist_matrix)):
             line = self.dist_matrix[i]
             count = self.__knn(i, copy.copy(line), k)
             cls_inx = np.where(self.classes == self.y[i])[0]
             kDN_value = (k - count[cls_inx]) / k
-            if (kDN_value > 0.5):
+            if kDN_value > 0.5:
                 CM_value += 1
         CM_value /= len(self.X)
         return CM_value
 
     def __MRI_p(self, profile):
-        '''
+        """
         Calculate the MRI value of a pattern.
 
         ------
@@ -518,7 +521,7 @@ class Complexity:
         Returns:
         mri_val (float): The MRI value of the pattern.
 
-        '''
+        """
         sum_val = 0
         m = len(profile)
         for j in range(m):
@@ -530,26 +533,26 @@ class Complexity:
         return mri_val
 
     def __MRI_k(self, cluster):
-        '''
-        Called by the MRCA function. Calculates the Multiresolution Index (MRI) for a cluster by
+        """
+        Called by the MRCA function. Calculates the Multi resolution Index (MRI) for a cluster by
         averaging the MRI value of each pattern in the cluster.
         --------
         Parameters:
-        cluster (array): An array of arrays (N*M) containg all the points in a cluster, where N is the number of points and M is the
-        dimesion of each point.
+        cluster (array): An array of arrays (N*M) contain all the points in a cluster, where N is the number of points and M is the
+        dimension of each point.
         ---------
         Returns:
-        mri_val (float): The multiresolution index of the cluster
+        mri_val (float): The multi resolution index of the cluster
         ---------
-        '''
+        """
         sum_val = 0
         for profile in cluster:
             sum_val += self.__MRI_p(profile)
         mri_val = sum_val / len(cluster)
         return mri_val
 
-    def MRCA(self, sigmas=[0.1, 0.2, 0.5], n_clusters=3, distance_func="default"):
-        '''
+    def MRCA(self, sigmas=None, n_clusters=3, distance_func="default"):
+        """
         Calculates the MRCA value complexity measure defined in [1].
 
         -------
@@ -562,16 +565,18 @@ class Complexity:
         -------
         References:
 
-        [1] Armano G, Tamponi E (2016) Experimenting multiresolution analysis for
+        [1] Armano G, Tamponi E (2016) Experimenting multi resolution analysis for
         identifying regions of different classification complexity. Pattern Analysis
         and Applications 19(1):129-137
-        '''
+        """
 
         # one vs one approach
+        if sigmas is None:
+            sigmas = [0.1, 0.2, 0.5]
         for i2 in range(len(self.class_inxs)):
             for j2 in range(i2 + 1, len(self.class_inxs)):
 
-                # create new arrays with just the 2 classes being considired for this iteration
+                # create new arrays with just the 2 classes being considered for this iteration
                 c1 = self.classes[i2]
                 c2 = self.classes[j2]
                 sample_c1 = self.X[self.class_inxs[i2]]
@@ -590,12 +595,12 @@ class Complexity:
                     # for each radius
                     for j in range(len(sigmas)):
                         sigma = sigmas[j]
-                        # change this: if there is more than 2 classes the hypershpere n_minus of all other classes
+                        # change this: if there is more than 2 classes the hypersphere n_minus of all other classes
 
                         n = self.__hypersphere(i, sigma, distance_matrix=new_dist_matrix, y=new_y)
 
                         # calculate the psi values for each profile in accordance to [1]
-                        if (new_y[i] == c1):
+                        if new_y[i] == c1:
                             alt_y = 1
                             psi = alt_y * ((n[1] - n[0]) / (n[1] + n[0]))
                         else:
@@ -603,7 +608,7 @@ class Complexity:
                             psi = alt_y * ((n[0] - n[1]) / (n[0] + n[1]))
                         profiles[i, j] = psi
 
-                # cluster the the profiles
+                # cluster the profiles
                 kmeans = KMeans(n_clusters=n_clusters).fit(profiles)
 
                 # for each cluster calculate the MRI value
@@ -615,8 +620,8 @@ class Complexity:
 
                 return mrca
 
-    def C1(self, sigmas=[0.01, 0.05, 0.1]):
-        '''
+    def C1(self, sigmas=None):
+        """
         Calculate the C1 value complexity measure defined in [1].
 
         -------
@@ -630,7 +635,9 @@ class Complexity:
 
         [1] Massie S, Craw S, Wiratunga N (2005) Complexity-guided case discovery
         for case based reasoning. In: AAAI, vol 5, pp 216-221
-        '''
+        """
+        if sigmas is None:
+            sigmas = [0.01, 0.05, 0.1]
         c1_sum = 0
         for i in range(len(self.X)):
             c1_instance_sum = 0
@@ -648,8 +655,8 @@ class Complexity:
 
         return c1_val
 
-    def C2(self, sigmas=[0.1, 0.2, 0.5]):
-        '''
+    def C2(self, sigmas=None):
+        """
         Calculate the C2 value complexity measure defined in [1].
 
         -------
@@ -662,14 +669,16 @@ class Complexity:
         References:
 
         [1] Cummins L (2013) Combining and choosing case base maintenance algorithms. PhD thesis, University College Cork
-        '''
+        """
+        if sigmas is None:
+            sigmas = [0.1, 0.2, 0.5]
         c2_sum = 0
         for i in range(len(self.X)):
             c2_instance_sum = 0
             for sigma in sigmas:
                 n = self.__hypersphere_sim(i, sigma)
 
-                if (sum(n) != 0):
+                if sum(n) != 0:
 
                     pkj = n[1] / sum(n)
                 else:
@@ -680,11 +689,11 @@ class Complexity:
         c2_val = c2_sum / len(self.X)
         return c2_val
 
-    def __calculate_n_inter(self, dist_matrix=[], y=[]):
-        '''
+    def __calculate_n_inter(self, dist_matrix=None, y=None):
+        """
         Called by the DBC and N1 complexity measure functions.
-        Calculates the miminimum spanning tree using a distance matrix, dist_matrix. Afterwards it counts the amount
-        of vertixes in the MST that have an edge connecting them are from 2 distinct classes.
+        Calculates the minimum spanning tree using a distance matrix, dist_matrix. Afterward it counts the amount
+        of vertexes in the MST that have an edge connecting them are from 2 distinct classes.
         If no distance matrix or class label array y is passed it assumes the attributes calculated in the
         __init__ method.
         -------
@@ -693,12 +702,16 @@ class Complexity:
         y (numpy.array): an array with the class labels
         -------
         Returns:
-        count (int): the number of vertixes connected by an edge that have different class labels
-        '''
+        count (int): the number of vertexes connected by an edge that have different class labels
+        """
 
-        # If no parameters are passed it uses the distance matrix and class labels calcultated in the __init__ method
+        # If no parameters are passed it uses the distance matrix and class labels calculated in the __init__ method
         # This is necessary because the distance matrix and class labels are different depending on the complexity measure
         # that calls this function.
+        if y is None:
+            y = []
+        if dist_matrix is None:
+            dist_matrix = []
         if len(dist_matrix) == 0:
             dist_matrix = self.dist_matrix
         if len(y) == 0:
@@ -711,23 +724,23 @@ class Complexity:
         # convert the mst to an array
         mst_array = minimum_spanning_tree.toarray().astype(float)
 
-        # iterate over the MST to determine which vertixes that are connected are from different classes.
-        vertix = []
+        # iterate over the MST to determine which vertexes that are connected are from different classes.
+        vertex = []
         aux_count = 0
         for i in range(len(mst_array)):
             for j in range(len(mst_array[0])):
-                if (mst_array[i][j] != 0):
+                if mst_array[i][j] != 0:
 
-                    if (y[i] != y[j]):
-                        vertix.append(i)
-                        vertix.append(j)
+                    if y[i] != y[j]:
+                        vertex.append(i)
+                        vertex.append(j)
 
-        count = len(np.unique(vertix))
+        count = len(np.unique(vertex))
 
         return count
 
     def N1(self):
-        '''
+        """
         Calculate the N1 value complexity measure defined in [1].
 
         -------
@@ -738,13 +751,13 @@ class Complexity:
 
         Ho T, Basu M (2002) Complexity measures of supervised classification
         problems. IEEE transactions on pattern analysis and machine intelligence 24(3):289-300
-        '''
+        """
         count = self.__calculate_n_inter()
         n1 = count / len(self.y)
         return n1
 
     def N2(self):
-        '''
+        """
         Calculate the N2 value complexity measure defined in [1].
 
         -------
@@ -755,7 +768,7 @@ class Complexity:
 
         Ho T, Basu M (2002) Complexity measures of supervised classification
         problems. IEEE transactions on pattern analysis and machine intelligence 24(3):289-300
-        '''
+        """
         count_inter = 0
         count_intra = 0
 
@@ -767,9 +780,9 @@ class Complexity:
             # iterate over every sample and check which is the nearest neighbour from the same class and
             # which is the nearest neighbour from the opposite class.
             for j in range(len(self.dist_matrix[0])):
-                if (self.y[i] == self.y[j] and i != j and self.dist_matrix[i][j] < min_intra):
+                if self.y[i] == self.y[j] and i != j and self.dist_matrix[i][j] < min_intra:
                     min_intra = self.dist_matrix[i][j]
-                if (self.y[i] != self.y[j] and self.dist_matrix[i][j] < min_inter):
+                if self.y[i] != self.y[j] and self.dist_matrix[i][j] < min_inter:
                     min_inter = self.dist_matrix[i][j]
             count_inter += min_inter
             count_intra += min_intra
@@ -779,7 +792,7 @@ class Complexity:
         return N2
 
     def N3(self, k=1):
-        '''
+        """
         Calculate the N3 value complexity measure in [1].
         By default k=1 in accordance to the definition in the paper. However it is possible to select a different value for k.
         -------
@@ -793,7 +806,7 @@ class Complexity:
 
         Ho T, Basu M (2002) Complexity measures of supervised classification
         problems. IEEE transactions on pattern analysis and machine intelligence 24(3):289-300
-        '''
+        """
 
         sample_count = 0
         # for each sample
@@ -805,14 +818,14 @@ class Complexity:
             class_count = count[cls_inx]
             max_count = np.max(count)
             # are there more instances with the same class label or with a different class label.
-            if (class_count < max_count):
+            if class_count < max_count:
                 sample_count += 1
 
         n3 = sample_count / len(self.y)
         return n3
 
     def __interpolate_samples(self):
-        '''
+        """
         Create new interpolated samples from the sample array X.
         To achieve this 2 samples in X from the same class are selected and a new sample is created by interpolating these 2.
         This sample will have the same class label of the 2 used to create it.
@@ -821,7 +834,7 @@ class Complexity:
         Returns:
         X_interp (array): The new array with the interpolated samples
         y_inter (array): An array with the labels of the new class samples.
-        '''
+        """
 
         X_interp = []
         y_interp = []
@@ -838,7 +851,7 @@ class Complexity:
             X_interp_cls = sample1 + (sample2 - sample1) * alpha
 
             y_interp = np.append(y_interp, new_y)
-            if (len(X_interp) == 0):
+            if len(X_interp) == 0:
                 X_interp = X_interp_cls
             else:
                 X_interp = np.concatenate((X_interp, X_interp_cls), axis=0)
@@ -846,7 +859,7 @@ class Complexity:
         return X_interp, y_interp
 
     def N4(self, k=1):
-        '''
+        """
         Calculate the N4 value complexity measure defined in [1].
         -------
         Parameters:
@@ -860,7 +873,7 @@ class Complexity:
         [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How complex
         is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
-        '''
+        """
 
         # create new interpolated samples
         X_interp, y_interp = self.__interpolate_samples()
@@ -880,14 +893,14 @@ class Complexity:
             class_count = count[cls_inx]
 
             max_count = np.max(count)
-            if (class_count < max_count):
+            if class_count < max_count:
                 sample_count += 1
 
         n4 = sample_count / len(y_interp)
         return n4
 
     def SI(self, k=1):
-        '''
+        """
         Calculate the Separability index (SI) complexity measure defined in [1].
 
         --------
@@ -902,7 +915,7 @@ class Complexity:
 
 
 
-        '''
+        """
 
         sample_count = 0
         # for each sample
@@ -914,14 +927,14 @@ class Complexity:
             class_count = count[cls_inx]
             max_count = np.max(count)
             # are there more instances with the same class label or with a different class label.
-            if (class_count == max_count):
+            if class_count == max_count:
                 sample_count += 1
 
         si_measure = sample_count / len(self.y)
         return si_measure
 
     def __find_nearest_oposite_class(self, x_inx, x_dist):
-        '''
+        """
         Function called by __find_nearest_oposite_class_all.
         Finds the nearest sample of the opposite class label for a sample
         ------
@@ -932,17 +945,17 @@ class Complexity:
         Returns:
         nearest_oposite_class_inx (int): The index of the nearest sample of the opposite class
         nearest_oposite_class_dist (float): The distance to the nearest sample of the opposite class
-        '''
+        """
         nearest_oposite_class_dist = np.inf
         nearest_oposite_class_inx = None
         for i in range(len(x_dist)):
-            if (x_dist[i] < nearest_oposite_class_dist and self.y[x_inx] != self.y[i]):
+            if x_dist[i] < nearest_oposite_class_dist and self.y[x_inx] != self.y[i]:
                 nearest_oposite_class_dist = x_dist[i]
                 nearest_oposite_class_inx = i
         return nearest_oposite_class_inx, nearest_oposite_class_dist
 
-    def __find_nearest_oposite_class_all(self, dist_matrix=[]):
-        '''
+    def __find_nearest_oposite_class_all(self, dist_matrix=None):
+        """
         Function called by  __get_sphere_count, LSC and Clust.
         Find the nearest sample of an opposite class label for every sample in X.
         -------
@@ -952,8 +965,10 @@ class Complexity:
         Returns:
         nearest_oposite_class_array (numpy.array): an array with the indexes of the nearest sample of the opposite class for every sample in X
         nearest_oposite_class_dist_array (numpy.array): an array with the distances of the nearest sample of the opposite class for every sample in X
-        '''
-        if (len(dist_matrix) == 0):
+        """
+        if dist_matrix is None:
+            dist_matrix = []
+        if len(dist_matrix) == 0:
             dist_matrix = self.dist_matrix
 
         nearest_oposite_class_array = []
@@ -965,7 +980,7 @@ class Complexity:
         return np.array(nearest_oposite_class_array), np.array(nearest_oposite_class_dist_array)
 
     def __find_spheres(self, ind, e_ind, e_dist, radius):
-        '''
+        """
         Called by __get_sphere_count.
         Calculates the radius of every hypersphere as defined by the T1 metric.
         -----
@@ -978,7 +993,7 @@ class Complexity:
         -----
         Returns:
         radius[ind] (float): the radius of the sample in index "ind".
-        '''
+        """
 
         if radius[ind] >= 0.0:
             return radius[ind]
@@ -986,7 +1001,7 @@ class Complexity:
         ind_enemy = e_ind[ind]
 
         # stop condition, the both samples are each other's nearest neighbour
-        if (ind == e_ind[ind_enemy]):
+        if ind == e_ind[ind_enemy]:
             radius[ind_enemy] = 0.5 * e_dist[ind]
             radius[ind] = 0.5 * e_dist[ind]
 
@@ -1003,8 +1018,8 @@ class Complexity:
         return radius[ind]
 
     def __is_inside(self, center_a, center_b, radius_a, radius_b):
-        '''
-        Check if a hypersphere a is inside an hypersphere b.
+        """
+        Check if a hypersphere a is inside a hypersphere b.
 
         -----
         Parameters:
@@ -1015,14 +1030,14 @@ class Complexity:
         ------
         Returns:
         var (bool): True if hypersphere a is inside hypersphere b, false if not.
-        '''
+        """
         var = False
-        if (sum(np.square(center_a - center_b)) < (radius_b - radius_a) ** 2):
+        if sum(np.square(center_a - center_b)) < (radius_b - radius_a) ** 2:
             var = True
         return var
 
     def __remove_overlapped_spheres(self, radius):
-        '''
+        """
         Remove all the hyperspheres that are completely contained inside another.
         ------
         Parameters:
@@ -1031,7 +1046,7 @@ class Complexity:
         Returns:
         sphere_inst_num (numpy.array): An array containing the number of hyperspheres completely inside each hypersphere, if during the execution
         of this function an hypersphere was found to be completly inside another then its count will be 0.
-        '''
+        """
 
         inx_sorted = np.argsort(radius)
         inst_per_sphere = np.ones(len(self.X), dtype=int)
@@ -1050,7 +1065,7 @@ class Complexity:
         return inst_per_sphere
 
     def __get_sphere_count(self):
-        '''
+        """
         Called by the T1, NSG and ICSV function.
         Calculates the number of samples inside each hypersphere as well as each hypersphere radius, in accordance to
         the T1 measure.
@@ -1059,7 +1074,7 @@ class Complexity:
         sphere_inst_count (numpy.array): An (1*N) with the number of samples inside each hypersphere, where N is the number of samples
         radius (numpy.array): An (1*N) with the radius of each hypersphere, where N is the number of samples.
         ------
-        '''
+        """
 
         # find the nearest sample of the opposite class for every sample in X.
         e_ind, e_dist = self.__find_nearest_oposite_class_all(dist_matrix=self.unnorm_dist_matrix)
@@ -1093,7 +1108,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def T1(self):
-        '''
+        """
         Calculate the T1 value complexity measure defined in [1].
 
         -------
@@ -1105,7 +1120,7 @@ class Complexity:
         [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How complex
         is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
-        '''
+        """
         sphere_inst_count, radius = self.__get_sphere_count()
         t1 = len(sphere_inst_count[sphere_inst_count > 0]) / len(self.y)
 
@@ -1114,7 +1129,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def DBC(self, distance_func="default"):
-        '''
+        """
         Calculate the DBC complexity measure defined in [1].
 
         -------
@@ -1130,7 +1145,7 @@ class Complexity:
         [1] Van der Walt CM, et al. (2008) Data measures that characterise
         classification problems. PhD thesis, University of Pretoria
 
-        '''
+        """
 
         # find the hypersphere centers
         sphere_inst_count, radius = self.__get_sphere_count()
@@ -1149,7 +1164,7 @@ class Complexity:
         return dbc_measure
 
     def LSC(self):
-        '''
+        """
         Calculate the LSC measure defined in [1].
 
         ------
@@ -1161,7 +1176,7 @@ class Complexity:
         [1] Leyva E, González A, Perez R (2014) A set of complexity measures
         designed for applying meta-learning to instance selection. IEEE Transactions
         on Knowledge and Data Engineering 27(2):354-367
-        '''
+        """
 
         # find the nearest neightbour of the oposite class for every sample
         nearest_enemy_inx, nearest_enemy_dist = self.__find_nearest_oposite_class_all()
@@ -1173,7 +1188,7 @@ class Complexity:
         for i in range(len(self.dist_matrix)):
             count = 0
             for j in range(len(self.dist_matrix[i])):
-                if (self.y[i] == self.y[j] and self.dist_matrix[i][j] < nearest_enemy_dist[i]):
+                if self.y[i] == self.y[j] and self.dist_matrix[i][j] < nearest_enemy_dist[i]:
                     count += 1
             ls_count.append(count)
 
@@ -1181,7 +1196,7 @@ class Complexity:
         return lsc_measure
 
     def Clust(self):
-        '''
+        """
         Calculate the Clust complexity measure defined in [1].
 
         ------
@@ -1194,7 +1209,7 @@ class Complexity:
         [1] Leyva E, González A, Perez R (2014) A set of complexity measures
         designed for applying meta-learning to instance selection. IEEE Transactions
         on Knowledge and Data Engineering 27(2):354-367
-        '''
+        """
         nearest_enemy_inx, nearest_enemy_dist = self.__find_nearest_oposite_class_all()
 
         ls_count = []
@@ -1206,7 +1221,7 @@ class Complexity:
             count = 0
             inxs = []
             for j in range(len(self.dist_matrix[i])):
-                if (i != j and self.y[i] == self.y[j] and self.dist_matrix[i][j] < nearest_enemy_dist[i]):
+                if i != j and self.y[i] == self.y[j] and self.dist_matrix[i][j] < nearest_enemy_dist[i]:
                     count += 1
                     inxs.append(j)
             cls_inx = np.where(self.classes == self.y[i])[0][0]
@@ -1224,11 +1239,11 @@ class Complexity:
                 for c in clusters:
                     # if this instance is in the cluster core local set
                     clusterCoreLocalSet = ls_count[i][c[0]][2]
-                    if (ls_count[i][i2][1] in clusterCoreLocalSet):
+                    if ls_count[i][i2][1] in clusterCoreLocalSet:
                         c[2].append(ls_count[i][i2][1])
                         inCluster = True
                 # if it is not in the cluster core local set
-                if (not inCluster):
+                if not inCluster:
                     clusterCoreInx = ls_count[i].index(ls_count[i][i2])
                     clusterCore = ls_count[i][i2]
                     clusterMembers = [clusterCore]
@@ -1245,7 +1260,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def NSG(self):
-        '''
+        """
         Calculate the NSG complexity measure defined in [1].
 
         -------
@@ -1257,7 +1272,7 @@ class Complexity:
         [1] Van der Walt CM, Barnard E (2007) Measures for the characterisation
         of pattern-recognition data sets. 18th Annual Symposium of the Pattern
         Recognition Association of South Africa
-        '''
+        """
         sphere_inst_count, radius = self.__get_sphere_count()
 
         nsg_measure = sum(sphere_inst_count) / len(sphere_inst_count[sphere_inst_count > 0])
@@ -1266,7 +1281,7 @@ class Complexity:
     # only for datasets with no categorical features
     def ICSV(self):
 
-        '''
+        """
         Calculate the ICSV complexity measure defined in [1].
 
         -------
@@ -1279,7 +1294,7 @@ class Complexity:
         of pattern-recognition data sets. 18th Annual Symposium of the Pattern
         Recognition Association of South Africa
 
-        '''
+        """
 
         # find the hyperspheres and their radius
         sphere_inst_count, radius = self.__get_sphere_count()
@@ -1300,7 +1315,7 @@ class Complexity:
 
         # calculate the icsv measure using the mean and densities of the spheres
         for i in range(len(radius)):
-            if (density[i] != 0):
+            if density[i] != 0:
                 icsv_measure += (density[i] - mean) ** 2
 
         icsv_measure = icsv_measure / len(sphere_inst_count[sphere_inst_count > 0])
@@ -1309,7 +1324,7 @@ class Complexity:
         return icsv_measure
 
     def __calculate_cells(self, resolution, transpose_X, get_labels=0):
-        '''
+        """
         Called py the purity and neighbourhood_separability functions.
         Creates a dictionary that maps each of the cells to the samples inside it. or if get_lables=1 it
         maps each of the cells to the class labels of each of the samples inside it.
@@ -1322,7 +1337,7 @@ class Complexity:
         ------
         Returns:
         reverse_dic (dictionary): a dictionary that maps the cells to the samples or their labels.
-        '''
+        """
         feature_bounds = []
         steps = []
         # for every feature
@@ -1345,8 +1360,8 @@ class Complexity:
             for j in range(len(self.X[0])):
                 for k in range(len(feature_bounds[j])):
 
-                    if (sample[j] >= feature_bounds[j][k] and sample[j] <= feature_bounds[j][k] + steps[j]):
-                        if (str(s) not in sample_dic):
+                    if feature_bounds[j][k] <= sample[j] <= feature_bounds[j][k] + steps[j]:
+                        if str(s) not in sample_dic:
                             sample_dic[str(s)] = "" + str(k)
                         else:
                             sample_dic[str(s)] += "-" + str(k)
@@ -1357,7 +1372,7 @@ class Complexity:
         for k, v in sample_dic.items():
             reverse_dic[v] = reverse_dic.get(v, [])
             # values are the class lables
-            if (get_labels == 1):
+            if get_labels == 1:
                 reverse_dic[v].append(self.y[int(k)])
             else:
                 reverse_dic[v].append(int(k))
@@ -1367,7 +1382,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def purity(self, max_resolution=32):
-        '''
+        """
         Calculates the purity complexity measure defined in [1].
 
         -----
@@ -1382,7 +1397,7 @@ class Complexity:
         [1] Singh S (2003) Prism{a novel framework for pattern recognition. Pattern
         Analysis & Applications 6(2):134-149
 
-        '''
+        """
         transpose_X = np.transpose(self.X)
         purities = []
         # multiple resolutions
@@ -1411,7 +1426,7 @@ class Complexity:
         # print(purities)
         w_purities = []
         for i in range(len(purities)):
-            new_p = purities[i] * (1 / 2 ** (i))
+            new_p = purities[i] * (1 / 2 ** i)
             w_purities.append(new_p)
         # print(w_purities)
 
@@ -1422,7 +1437,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def neighbourhood_separability(self, max_resolution=32):
-        '''
+        """
         Calculates the neighbourhood_separability complexity measure defined in [1].
 
         -----
@@ -1437,7 +1452,7 @@ class Complexity:
         [1] Singh S (2003) Prism{a novel framework for pattern recognition. Pattern
         Analysis & Applications 6(2):134-149
 
-        '''
+        """
         transpose_X = np.transpose(self.X)
         neigh_sep = []
         # multiple resolutions
@@ -1455,7 +1470,7 @@ class Complexity:
 
                     # according to the original paper limiting the max num to 11 is good practice since for large datasets the process
                     # becomes too costly
-                    if (same_class_num > 11):
+                    if same_class_num > 11:
                         same_class_num = 11
 
                     # does it still count itself?
@@ -1469,7 +1484,7 @@ class Complexity:
                         props.append(prop)
 
                     # if the sample is the only one of its class in the cell
-                    if (len(props) < 2):
+                    if len(props) < 2:
 
                         auc = 0
                     else:
@@ -1490,7 +1505,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def F1(self):
-        '''
+        """
         Calculates the F1 measure defined in [1].
         Uses One vs One method to handle multiclass datasets.
         -----
@@ -1503,7 +1518,7 @@ class Complexity:
         complexity for imbalanced data sets: analysis of smote-based oversampling and
         evolutionary undersampling. Soft Computing 15(10):1909-1936
 
-        '''
+        """
         f1s = []
 
         # one vs one method
@@ -1530,7 +1545,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def F1v(self):
-        '''
+        """
         Calculates the F1v measure defined in [1].
         Uses One vs One method to handle multiclass datasets.
         -----
@@ -1539,11 +1554,11 @@ class Complexity:
         -----
         References:
 
-        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How com-
-        plex is your classification problem? a survey on measuring classification
+        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How complex
+        is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
 
-        '''
+        """
         f1vs = []
         # one vs one method
         for i in range(len(self.class_inxs)):
@@ -1568,7 +1583,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def F2(self):
-        '''
+        """
         Calculates the F2 measure defined in [1].
         Uses One vs One method to handle multiclass datasets.
         -----
@@ -1577,10 +1592,10 @@ class Complexity:
         -----
         References:
 
-        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How com-
-        plex is your classification problem? a survey on measuring classification
+        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How complex
+        is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
-        '''
+        """
         f2s = []
         # one vs one method
         for i in range(len(self.class_inxs)):
@@ -1604,7 +1619,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def F3(self):
-        '''
+        """
         Calculates the F3 measure defined in [1].
         Uses One vs One method to handle multiclass datasets.
         -----
@@ -1613,10 +1628,10 @@ class Complexity:
         -----
         References:
 
-        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How com-
-        plex is your classification problem? a survey on measuring classification
+        [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How complex
+        is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
-        '''
+        """
         f3s = []
         # one vs one method
         for i in range(len(self.class_inxs)):
@@ -1639,7 +1654,7 @@ class Complexity:
                     # for every sample
                     for value in feature:
                         # check if the sample is inside the bounds
-                        if (value >= maxmin[k] and value <= minmax[k]):
+                        if maxmin[k] <= value <= minmax[k]:
                             count += 1
                     overlap_count.append(count)
 
@@ -1650,7 +1665,7 @@ class Complexity:
 
     # only for datasets with no categorical features
     def F4(self):
-        '''
+        """
         Calculates the F4 measure defined in [1].
         Uses One vs One method to handle multiclass datasets.
         -----
@@ -1662,7 +1677,7 @@ class Complexity:
         [1] Lorena AC, Garcia LP, Lehmann J, Souto MC, Ho TK (2019) How com-
         plex is your classification problem? a survey on measuring classification
         complexity. ACM Computing Surveys (CSUR) 52(5):1-34
-        '''
+        """
 
         f4s = []
         # one vs one method
@@ -1688,7 +1703,7 @@ class Complexity:
                 while len(X) > 0:
 
                     # check if one of the classes is not represented
-                    if (len(sample_c1) == 0 or len(sample_c2) == 0):
+                    if len(sample_c1) == 0 or len(sample_c2) == 0:
                         maxmin = np.full(len(X[1]), np.inf)
                         minmax = np.full(len(X[1]), -np.inf)
                     else:
@@ -1706,7 +1721,7 @@ class Complexity:
                         # for each sample
                         for j in range(len(feature)):
                             value = feature[j]
-                            if (value >= maxmin[i] and value <= minmax[i]):
+                            if maxmin[i] <= value <= minmax[i]:
                                 count += 1
                                 inx_list.append(j)
 
@@ -1721,7 +1736,7 @@ class Complexity:
                     # remove that feature
                     valid_features = list(range(0, min_inx)) + list(range(min_inx + 1, len(transpose_X)))
 
-                    if (len(min_overlap_inx) == 0 or len(valid_features) == 0):
+                    if len(min_overlap_inx) == 0 or len(valid_features) == 0:
                         break
 
                     new_X = []
@@ -1762,7 +1777,7 @@ class Complexity:
         return f4s
 
     def __class_overlap(self, class_samples, other_samples):
-        '''
+        """
         Called by the input_noise function.
         Calculates the class overlap between two classes.
         -------
@@ -1772,33 +1787,33 @@ class Complexity:
         -------
         Returns:
         count (int): the number of samples from the first class that are in the domain of the second class.
-        '''
+        """
         min_class = np.min(other_samples, axis=0)
         max_class = np.max(other_samples, axis=0)
         count = 0
         for sample in class_samples:
             for i in range(len(sample)):
                 feature = sample[i]
-                if (feature > min_class[i] and feature < max_class[i]):
+                if min_class[i] < feature < max_class[i]:
                     count += 1
 
         return count
 
     # only for datasets with no categorical features
     def input_noise(self):
-        '''
+        """
         Calculate the input noise metric defined in [1].
         Uses one vs one method if the dataset contains more than 2 classes.
         -----
         Returns:
-        ins (array): the input noise value for each each one vs one combination of classes.
+        ins (array): the input noise value for each one vs one combination of classes.
         -----
         References:
 
         [1] Van der Walt CM, Barnard E (2007) Measures for the characterisation
         of pattern-recognition data sets. 18th Annual Symposium of the Pattern
         Recognition Association of South Africa
-        '''
+        """
         ins = []
         for i in range(len(self.class_inxs)):
             for j in range(i + 1, len(self.class_inxs)):
@@ -1816,7 +1831,7 @@ class Complexity:
         return ins
 
     def borderline(self, k=5):
-        '''
+        """
         Calculates the borderline examples metric defined in [1].
 
         ------
@@ -1832,19 +1847,19 @@ class Complexity:
         in presence of noisy and borderline examples. In: International Conference
         on Rough Sets and Current Trends in Computing, Springer, pp 158-167
 
-        '''
+        """
         borderline_count = 0
         for i in range(len(self.X)):
             count = self.__knn(i, copy.copy(self.dist_matrix[i]), k)
             cls_inx = np.where(self.classes == self.y[i])[0][0]
             # check this
-            if ((sum(count) - count[cls_inx]) >= 2):
+            if (sum(count) - count[cls_inx]) >= 2:
                 borderline_count += 1
         borderline = borderline_count * 100 / len(self.X)
         return borderline
 
     def deg_overlap(self, k=5):
-        '''
+        """
         Calculates the degree of overlap metric defined in [1].
 
         ------
@@ -1860,12 +1875,12 @@ class Complexity:
         Analysing the footprint of classifiers in overlapped and imbalanced con-
         texts. In: International Symposium on Intelligent Data Analysis, Springer,
         pp 200-212
-        '''
+        """
         deg = 0
         for i in range(len(self.X)):
             count = self.__knn(i, copy.copy(self.dist_matrix[i]), k)
             cls_inx = np.where(self.classes == self.y[i])[0][0]
-            if (count[cls_inx] != k):
+            if count[cls_inx] != k:
                 deg += 1
         deg_ov = deg / len(self.X)
         return deg_ov
