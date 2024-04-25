@@ -1,7 +1,6 @@
 from complexity.Complexity import Complexity
 
-# test: dataset from paper
-complexity = Complexity("./Datasets/dataset/dataset from paper/61_iris.arff", distance_func="default", file_type="arff")
+complexity = Complexity("./Data/NewDatasets/abalone/abalone.csv", meta=[1, 0, 0, 0, 0, 0, 0, 0] ,distance_func="default", file_type="csv")
 
 
 print(complexity.T1())
