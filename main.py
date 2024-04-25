@@ -21,7 +21,9 @@ dataset_paths = {
     'YeastUn': 'EncodeDatasets/YeastUn.arff'
 }
 
-# 自己定义meta，就不用理arff文件中原本的REAL了，会重新分配 numeric 和 REAL(把category variable 给 encoding 后存为 REAL)
+"""
+    Define meta
+"""
 dataset_meta = {
     'Africa': [1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1],
     'BankNote': [0, 0, 0, 0],
@@ -41,7 +43,9 @@ dataset_meta = {
     'YeastUn': [0, 0, 0, 0, 0, 0, 0, 0]
 }
 
-# 创建一个CSV文件来保存结果
+"""
+    Save results to csv file
+"""
 with open('dataset_results.csv', 'w', newline='') as csvfile:
     fieldnames = ['Dataset', 'Feature overlap F1', 'Feature overlap F1v', 'Feature overlap F2', 'Feature overlap F3',
                   'Feature overlap F4', 'Feature overlap input_noise', 'Structural overlap N1', 'Structural overlap T1',
