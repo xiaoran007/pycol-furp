@@ -8,6 +8,7 @@ from operator import itemgetter
 
 import arff
 import numpy as np
+import pandas as pd
 import scipy.spatial
 import sklearn
 from scipy.sparse import data
@@ -24,7 +25,7 @@ class Complexity:
 
     """
 
-    def __init__(self, file_name, meta, distance_func="default", file_type="arff"):
+    def __init__(self, file_name, meta=None, distance_func="default", file_type="arff"):
         """
         Constructor method, setups up the necessary class attributes to be
         used by the complexity measure functions.
@@ -36,12 +37,18 @@ class Complexity:
         -----
         Parameters:
         file_name (string): Location of the file that contains the dataset.
+        meta (list): A list that contains the contextual information about the features.
         distance_func (string): The distance function to be used to calculate the distance matrix. Only available option right now is "HEOM".
-        file_type (string): The type of file where the dataset is stored. Only available option right now is "arff".
+        file_type (string): The type of file where the dataset is stored. Only available option right now is "arff" and "csv".
 
         """
+        if meta is None:
+            meta = list()
+
         if file_type == "arff":
             [X, y, meta] = self.__read_file(file_name, meta)
+        elif file_type == "csv":
+            [X, y, meta] = self.__read_file_csv(file_name, meta)
         else:
             print("Only arff files are available for now")
             return
@@ -75,18 +82,20 @@ class Complexity:
             class_count[i] += count
         return class_count
 
-    def __read_file(self, file_name, meta):
+    @staticmethod
+    def __read_file(file_name, meta):
         """
         Is called by the __init__ method.
         Read an arff file containing the dataset.
         --------
         Parameters:
         file_name: string, name of the arff file to read from
+        meta (list): A list that contains the contextual information about the features.
         --------
         Returns:
         X (numpy.array): An array containing the attributes of all samples;
         y (numpy.array): An array containing the class labels of all samples;
-        meta (array): An array with information about the type of attributes (numerical or categorical)
+        meta (array): An array with information about the type of attributes (numerical (0) or categorical (1))
         --------
         """
 
@@ -95,15 +104,17 @@ class Complexity:
         num_attr = len(data[0]) - 1
 
         att = f['attributes']
-        meta = meta
-        #         meta=[]
+        if len(meta) != 0:
+            meta = meta
+        else:
+            meta = list()
 
-        #         #for every attribute check if it is numeric or categorical
-        #         for i in range(len(att)-1):
-        #             if(att[i][1]=="NUMERIC"):
-        #                 meta.append(0)
-        #             else:
-        #                 meta.append(1)
+            # for every attribute check if it is numeric or categorical
+            for i in range(len(att)-1):
+                if att[i][1] == "NUMERIC":
+                    meta.append(0)
+                else:
+                    meta.append(1)
 
         # split each sample into attributes and label
         X = [i[:num_attr] for i in data]
@@ -116,6 +127,53 @@ class Complexity:
         y = [np.where(classes == i[-1])[0][0] for i in data]
 
         #         return f
+        return [X, y, meta]
+
+    @staticmethod
+    def __read_file_csv(file_name, meta):
+        """
+        Is called by the __init__ method.
+        Read a csv file containing the dataset.
+        --------
+        Parameters:
+        file_name: string, name of the arff file to read from
+        meta (list): A list that contains the contextual information about the features.
+        --------
+        Returns:
+        X (numpy.array): An array containing the attributes of all samples;
+        y (numpy.array): An array containing the class labels of all samples;
+        meta (array): An array with information about the type of attributes (numerical (0) or categorical (1))
+        --------
+        """
+
+        assert len(meta) != 0
+
+        test = pd.read_csv(file_name)
+
+        #         meta=[]
+
+        #         for col in test.columns:
+        #             if test[col].dtype in [object, bool]:
+        #                 meta.append(1)
+        #             else:
+        #                 meta.append(0)
+
+        #         meta.pop()
+
+        data = test.values.tolist()
+        num_attr = len(data[0]) - 1
+        meta = meta
+
+        # split each sample into attributes and label
+        X = [i[:num_attr] for i in data]
+        y = [i[-1] for i in data]
+
+        # indentify the existing classes
+        classes = np.unique(y)
+
+        # create new class labels from 0 to n, where n is the number of classes
+        y = [np.where(classes == i[-1])[0][0] for i in data]
+
         return [X, y, meta]
 
     def __distance_HEOM(self, X):
