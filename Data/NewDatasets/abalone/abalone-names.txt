@@ -1,0 +1,29 @@
+Abalone data set
+
+1: Description.
+
+Predicting the age of abalone from physical measurements. The age of abalone is determined by cutting the shell through the cone and counting the number of rings through a microscope. Other measurements, which are easier to obtain, are used to predict the age. Further information, such as weather patterns and location (hence food availability) may be required to solve the problem.
+ 
+In this version, 3 duplicated instances have been removed from the original UCI dataset.
+
+2: Type.			Classification	
+3: Origin.			Real world
+4: Instances.		4174
+5: Features.		8
+6: Classes.			28	
+7: Missing values.	No
+
+8: Header.
+
+@relation abalone
+@attribute Sex {M, F, I}
+@attribute Length real [0.075, 0.815]
+@attribute Diameter real [0.055, 0.65]
+@attribute Height real [0.0, 1.13]
+@attribute Whole_weight real [0.0020, 2.8255]
+@attribute Shucked_weight real [0.0010, 1.488]
+@attribute Viscera_weight real [0.0005, 0.76]
+@attribute Shell_weight real [0.0015, 1.005]
+@attribute Rings {15, 7, 9, 10, 8, 20, 16, 19, 14, 11, 12, 18, 13, 5, 4, 6, 21, 17, 22, 1, 3, 26, 23, 29, 2, 27, 25, 24}
+@inputs Sex, Length, Diameter, Height, Whole_weight, Shucked_weight, Viscera_weight, Shell_weight
+@outputs Rings
