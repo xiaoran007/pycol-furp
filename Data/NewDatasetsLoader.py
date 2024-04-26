@@ -18,6 +18,8 @@ class Dataset:
                 return self.load_adult()
             elif self.DatasetName == 'balance':
                 return self.load_balance()
+            elif self.DatasetName == 'breast':
+                return self.load_breast()
 
     @staticmethod
     def load(file_path):
@@ -38,6 +40,9 @@ class Dataset:
 
     def load_balance(self):
         return self.load("NewDatasets/balance/balance.csv")
+
+    def load_breast(self):
+        return self.load("NewDatasets/breast/breast.csv")
 
 
 
