@@ -39,6 +39,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("Online_Shoppers_Intention")
         self.datasetNameList.append("pima")
         self.datasetNameList.append("Satimage")
+        self.datasetNameList.append("segment")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -64,6 +65,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["Online_Shoppers_Intention"] = self._Online_Shoppers_Intention()
         self.datasetMetaDict["pima"] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["Satimage"] = self._Satimage()
+        self.datasetMetaDict["segment"] = self._segment()
 
     @staticmethod
     def _Company_Bankruptcy():
@@ -116,6 +118,13 @@ class ProcessedDataset(object):
     def _Satimage():
         meta = list()
         for i in range(36):
+            meta.append(0)
+        return meta
+
+    @staticmethod
+    def _segment():
+        meta = list()
+        for i in range(19):
             meta.append(0)
         return meta
 

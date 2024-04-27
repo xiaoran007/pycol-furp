@@ -58,6 +58,8 @@ class Dataset:
                 return self.load_pima()
             elif self.DatasetName == "Satimage":
                 return self.load_Satimage()
+            elif self.DatasetName == "segment":
+                return self.load_segment()
 
     @staticmethod
     def load(file_path):
@@ -138,6 +140,9 @@ class Dataset:
 
     def load_Satimage(self):
         return self.load("NewDatasets/Satimage/Satimage.csv")
+
+    def load_segment(self):
+        return self.load("NewDatasets/segment/segment.csv")
 
 
 
