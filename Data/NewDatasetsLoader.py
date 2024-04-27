@@ -30,6 +30,8 @@ class Dataset:
                 return self.load_derma()
             elif self.DatasetName == 'Employee_Promote':
                 return self.load_Employee_Promote()
+            elif self.DatasetName == 'flare_f':
+                return self.load_flare_f()
 
     @staticmethod
     def load(file_path):
@@ -68,6 +70,9 @@ class Dataset:
 
     def load_Employee_Promote(self):
         return self.load("NewDatasets/Employee_Promote/Employee_Promote.csv")
+
+    def load_flare_f(self):
+        return self.load("NewDatasets/flare_f/flare_f.csv")
 
 
 
