@@ -28,6 +28,8 @@ class Dataset:
                 return self.load_Company_Bankruptcy()
             elif self.DatasetName == 'derma':
                 return self.load_derma()
+            elif self.DatasetName == 'Employee_Promote':
+                return self.load_Employee_Promote()
 
     @staticmethod
     def load(file_path):
@@ -63,6 +65,9 @@ class Dataset:
 
     def load_derma(self):
         return self.load("NewDatasets/derma/derma.csv")
+
+    def load_Employee_Promote(self):
+        return self.load("NewDatasets/Employee_Promote/Employee_Promote.csv")
 
 
 

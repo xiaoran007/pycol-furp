@@ -24,6 +24,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("cleveland")
         self.datasetNameList.append("Company_Bankruptcy")
         self.datasetNameList.append("derma")
+        self.datasetNameList.append("Employee_Promote")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -34,6 +35,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["cleveland"] = [0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1]
         self.datasetMetaDict["Company_Bankruptcy"] = self._Company_Bankruptcy()
         self.datasetMetaDict["derma"] = self._derma()
+        self.datasetMetaDict["Employee_Promote"] = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
 
     @staticmethod
     def _Company_Bankruptcy():

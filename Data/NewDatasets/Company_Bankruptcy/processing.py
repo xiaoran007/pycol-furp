@@ -13,7 +13,7 @@ def main():
     df = pd.read_csv("./data.csv", delimiter=',')
     print(df)
     print(df["Bankrupt?"].value_counts())
-    df = df.dropna(axis=1)
+    df = df.dropna(axis=0)
     print(df["Bankrupt?"].value_counts())
 
     df[" Liability-Assets Flag-C"] = df[" Liability-Assets Flag"]
