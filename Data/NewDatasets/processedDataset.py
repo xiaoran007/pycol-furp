@@ -33,6 +33,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("iris")
         self.datasetNameList.append("letter")
         self.datasetNameList.append("libra")
+        self.datasetNameList.append("liver")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -52,6 +53,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["iris"] = [0, 0, 0, 0]
         self.datasetMetaDict["letter"] = self._letter()
         self.datasetMetaDict["libra"] = self._libra()
+        self.datasetMetaDict["liver"] = [0, 0, 0, 0, 0, 0]
 
     @staticmethod
     def _Company_Bankruptcy():
