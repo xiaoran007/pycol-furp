@@ -5,6 +5,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("adult")
         self.datasetNameList.append("balance")
         self.datasetNameList.append("breast")
+        self.datasetNameList.append("car")
 
     def GetDatasetList(self):
         return self.datasetNameList
