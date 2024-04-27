@@ -44,6 +44,8 @@ class Dataset:
                 return self.load_iris()
             elif self.DatasetName == "letter":
                 return self.load_letter()
+            elif self.DatasetName == "libra":
+                return self.load_libra()
 
     @staticmethod
     def load(file_path):
@@ -103,6 +105,9 @@ class Dataset:
 
     def load_letter(self):
         return self.load("NewDatasets/letter/letter.csv")
+
+    def load_libra(self):
+        return self.load("NewDatasets/libra/libra.csv")
 
 
 
