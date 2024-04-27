@@ -42,6 +42,8 @@ class Dataset:
                 return self.load_ionosphere()
             elif self.DatasetName == "iris":
                 return self.load_iris()
+            elif self.DatasetName == "letter":
+                return self.load_letter()
 
     @staticmethod
     def load(file_path):
@@ -98,6 +100,9 @@ class Dataset:
 
     def load_iris(self):
         return self.load("NewDatasets/iris/iris.csv")
+
+    def load_letter(self):
+        return self.load("NewDatasets/letter/letter.csv")
 
 
 
