@@ -32,6 +32,8 @@ class Dataset:
                 return self.load_Employee_Promote()
             elif self.DatasetName == 'flare_f':
                 return self.load_flare_f()
+            elif self.DatasetName == 'glass':
+                return self.load_glass()
 
     @staticmethod
     def load(file_path):
@@ -73,6 +75,9 @@ class Dataset:
 
     def load_flare_f(self):
         return self.load("NewDatasets/flare_f/flare_f.csv")
+
+    def load_glass(self):
+        return self.load("NewDatasets/glass/glass.csv")
 
 
 
