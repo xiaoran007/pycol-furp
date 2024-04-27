@@ -36,6 +36,8 @@ class Dataset:
                 return self.load_glass()
             elif self.DatasetName == 'Haberman':
                 return self.load_Haberman()
+            elif self.DatasetName == 'Home_Equity':
+                return self.load_Home_Equity()
 
     @staticmethod
     def load(file_path):
@@ -83,6 +85,9 @@ class Dataset:
 
     def load_Haberman(self):
         return self.load("NewDatasets/Haberman/Haberman.csv")
+
+    def load_Home_Equity(self):
+        return self.load("NewDatasets/Home_Equity/Home_Equity.csv")
 
 
 
