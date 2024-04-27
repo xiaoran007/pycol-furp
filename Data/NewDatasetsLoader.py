@@ -48,6 +48,8 @@ class Dataset:
                 return self.load_libra()
             elif self.DatasetName == "liver":
                 return self.load_liver()
+            elif self.DatasetName == "new_thyroid":
+                return self.load_new_thyroid()
 
     @staticmethod
     def load(file_path):
@@ -113,6 +115,9 @@ class Dataset:
 
     def load_liver(self):
         return self.load("NewDatasets/liver/liver.csv")
+
+    def load_new_thyroid(self):
+        return self.load("NewDatasets/new_thyroid/new_thyroid.csv")
 
 
 
