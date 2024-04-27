@@ -62,6 +62,8 @@ class Dataset:
                 return self.load_segment()
             elif self.DatasetName == "shuttle":
                 return self.load_shuttle()
+            elif self.DatasetName == "spam_base":
+                return self.load_spam_base()
 
     @staticmethod
     def load(file_path):
@@ -148,6 +150,9 @@ class Dataset:
 
     def load_shuttle(self):
         return self.load("NewDatasets/shuttle/shuttle.csv")
+
+    def load_spam_base(self):
+        return self.load("NewDatasets/spam_base/spam_base.csv")
 
 
 

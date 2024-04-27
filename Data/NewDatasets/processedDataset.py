@@ -41,6 +41,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("Satimage")
         self.datasetNameList.append("segment")
         self.datasetNameList.append("shuttle")
+        self.datasetNameList.append("spam_base")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -68,6 +69,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["Satimage"] = self._Satimage()
         self.datasetMetaDict["segment"] = self._segment()
         self.datasetMetaDict["shuttle"] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.datasetMetaDict["spam_base"] = self._spam_base()
 
     @staticmethod
     def _Company_Bankruptcy():
@@ -127,6 +129,13 @@ class ProcessedDataset(object):
     def _segment():
         meta = list()
         for i in range(19):
+            meta.append(0)
+        return meta
+
+    @staticmethod
+    def _spam_base():
+        meta = list()
+        for i in range(56):
             meta.append(0)
         return meta
 
