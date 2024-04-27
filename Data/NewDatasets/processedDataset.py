@@ -43,6 +43,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("shuttle")
         self.datasetNameList.append("spam_base")
         self.datasetNameList.append("Vehicle")
+        self.datasetNameList.append("vowel")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -72,6 +73,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["shuttle"] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["spam_base"] = self._spam_base()
         self.datasetMetaDict["Vehicle"] = self._Vehicle()
+        self.datasetMetaDict["vowel"] = [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     @staticmethod
     def _Company_Bankruptcy():

@@ -66,6 +66,8 @@ class Dataset:
                 return self.load_spam_base()
             elif self.DatasetName == "Vehicle":
                 return self.load_Vehicle()
+            elif self.DatasetName == "vowel":
+                return self.load_vowel()
 
     @staticmethod
     def load(file_path):
@@ -158,6 +160,9 @@ class Dataset:
 
     def load_Vehicle(self):
         return self.load("NewDatasets/Vehicle/Vehicle.csv")
+
+    def load_vowel(self):
+        return self.load("NewDatasets/vowel/vowel.csv")
 
 
 
