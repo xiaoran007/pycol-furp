@@ -38,6 +38,10 @@ class Dataset:
                 return self.load_Haberman()
             elif self.DatasetName == 'Home_Equity':
                 return self.load_Home_Equity()
+            elif self.DatasetName == 'ionosphere':
+                return self.load_ionosphere()
+            elif self.DatasetName == "iris":
+                return self.load_iris()
 
     @staticmethod
     def load(file_path):
@@ -91,6 +95,9 @@ class Dataset:
 
     def load_ionosphere(self):
         return self.load("NewDatasets/ionosphere/ionosphere.csv")
+
+    def load_iris(self):
+        return self.load("NewDatasets/iris/iris.csv")
 
 
 
