@@ -68,6 +68,8 @@ class Dataset:
                 return self.load_Vehicle()
             elif self.DatasetName == "vowel":
                 return self.load_vowel()
+            elif self.DatasetName == "wisconsin":
+                return self.load_wisconsin()
 
     @staticmethod
     def load(file_path):
@@ -163,6 +165,9 @@ class Dataset:
 
     def load_vowel(self):
         return self.load("NewDatasets/vowel/vowel.csv")
+
+    def load_wisconsin(self):
+        return self.load("NewDatasets/wisconsin/wisconsin.csv")
 
 
 
