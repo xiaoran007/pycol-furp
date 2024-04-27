@@ -29,6 +29,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("glass")
         self.datasetNameList.append("Haberman")
         self.datasetNameList.append("Home_Equity")
+        self.datasetNameList.append("ionosphere")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -44,6 +45,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["glass"] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["Haberman"] = [0, 0, 0]
         self.datasetMetaDict["Home_Equity"] = [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+        self.datasetMetaDict["ionosphere"] = self._ionosphere()
 
     @staticmethod
     def _Company_Bankruptcy():
@@ -60,5 +62,12 @@ class ProcessedDataset(object):
         for i in range(33):
             meta.append(0)
         meta.append(1)
+        return meta
+
+    @staticmethod
+    def _ionosphere():
+        meta = list()
+        for i in range(34):
+            meta.append(0)
         return meta
 

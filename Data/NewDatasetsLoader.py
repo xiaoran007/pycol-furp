@@ -89,6 +89,9 @@ class Dataset:
     def load_Home_Equity(self):
         return self.load("NewDatasets/Home_Equity/Home_Equity.csv")
 
+    def load_ionosphere(self):
+        return self.load("NewDatasets/ionosphere/ionosphere.csv")
+
 
 
 
