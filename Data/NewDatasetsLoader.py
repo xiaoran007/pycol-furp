@@ -54,6 +54,8 @@ class Dataset:
                 return self.load_nursery()
             elif self.DatasetName == "Online_Shoppers_Intention":
                 return self.load_Online_Shoppers_Intention()
+            elif self.DatasetName == "pima":
+                return self.load_pima()
 
     @staticmethod
     def load(file_path):
@@ -128,6 +130,9 @@ class Dataset:
 
     def load_Online_Shoppers_Intention(self):
         return self.load("NewDatasets/Online_Shoppers_Intention/Online_Shoppers_Intention.csv")
+
+    def load_pima(self):
+        return self.load("NewDatasets/pima/pima.csv")
 
 
 
