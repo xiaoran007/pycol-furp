@@ -34,6 +34,8 @@ class Dataset:
                 return self.load_flare_f()
             elif self.DatasetName == 'glass':
                 return self.load_glass()
+            elif self.DatasetName == 'Haberman':
+                return self.load_Haberman()
 
     @staticmethod
     def load(file_path):
@@ -78,6 +80,9 @@ class Dataset:
 
     def load_glass(self):
         return self.load("NewDatasets/glass/glass.csv")
+
+    def load_Haberman(self):
+        return self.load("NewDatasets/Haberman/Haberman.csv")
 
 
 
