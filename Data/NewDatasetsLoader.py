@@ -26,6 +26,8 @@ class Dataset:
                 return self.load_cleveland()
             elif self.DatasetName == 'Company_Bankruptcy':
                 return self.load_Company_Bankruptcy()
+            elif self.DatasetName == 'derma':
+                return self.load_derma()
 
     @staticmethod
     def load(file_path):
@@ -58,6 +60,9 @@ class Dataset:
 
     def load_Company_Bankruptcy(self):
         return self.load("NewDatasets/Company_Bankruptcy/Company_Bankruptcy.csv")
+
+    def load_derma(self):
+        return self.load("NewDatasets/derma/derma.csv")
 
 
 
