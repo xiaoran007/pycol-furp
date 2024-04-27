@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
     imbalance ratio minority class : majority class = 328 : 12632 (Total: 12960)
     minority class: "label" == "very_recom"
     majority class: "label" == others
-    meta: [1, 1, 1, 0, 1, 1, 1, 1]
+    meta: [1, 1, 1, 1, 1, 1, 1, 1]
 """
 
 
@@ -22,6 +22,7 @@ def main():
     df['c0'] = le.fit_transform(df['c0'])
     df['c1'] = le.fit_transform(df['c1'])
     df['c2'] = le.fit_transform(df['c2'])
+    df['c3'] = le.fit_transform(df['c3'])
     df['c4'] = le.fit_transform(df['c4'])
     df['c5'] = le.fit_transform(df['c5'])
     df['c6'] = le.fit_transform(df['c6'])

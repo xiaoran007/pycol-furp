@@ -66,7 +66,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["libra"] = self._libra()
         self.datasetMetaDict["liver"] = [0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["new_thyroid"] = [0, 0, 0, 0, 0]
-        self.datasetMetaDict["nursery"] = [1, 1, 1, 0, 1, 1, 1, 1]
+        self.datasetMetaDict["nursery"] = [1, 1, 1, 1, 1, 1, 1, 1]
         self.datasetMetaDict["Online_Shoppers_Intention"] = self._Online_Shoppers_Intention()
         self.datasetMetaDict["pima"] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["Satimage"] = self._Satimage()
