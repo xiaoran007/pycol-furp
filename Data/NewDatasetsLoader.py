@@ -24,6 +24,8 @@ class Dataset:
                 return self.load_car()
             elif self.DatasetName == 'cleveland':
                 return self.load_cleveland()
+            elif self.DatasetName == 'Company_Bankruptcy':
+                return self.load_Company_Bankruptcy()
 
     @staticmethod
     def load(file_path):
@@ -53,6 +55,9 @@ class Dataset:
 
     def load_cleveland(self):
         return self.load("NewDatasets/cleveland/cleveland.csv")
+
+    def load_Company_Bankruptcy(self):
+        return self.load("NewDatasets/Company_Bankruptcy/Company_Bankruptcy.csv")
 
 
 
