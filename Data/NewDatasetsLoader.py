@@ -56,6 +56,8 @@ class Dataset:
                 return self.load_Online_Shoppers_Intention()
             elif self.DatasetName == "pima":
                 return self.load_pima()
+            elif self.DatasetName == "Satimage":
+                return self.load_Satimage()
 
     @staticmethod
     def load(file_path):
@@ -133,6 +135,9 @@ class Dataset:
 
     def load_pima(self):
         return self.load("NewDatasets/pima/pima.csv")
+
+    def load_Satimage(self):
+        return self.load("NewDatasets/Satimage/Satimage.csv")
 
 
 
