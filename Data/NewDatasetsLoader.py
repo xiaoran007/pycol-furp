@@ -52,6 +52,8 @@ class Dataset:
                 return self.load_new_thyroid()
             elif self.DatasetName == "nursery":
                 return self.load_nursery()
+            elif self.DatasetName == "Online_Shoppers_Intention":
+                return self.load_Online_Shoppers_Intention()
 
     @staticmethod
     def load(file_path):
@@ -123,6 +125,9 @@ class Dataset:
 
     def load_nursery(self):
         return self.load("NewDatasets/nursery/nursery.csv")
+
+    def load_Online_Shoppers_Intention(self):
+        return self.load("NewDatasets/Online_Shoppers_Intention/Online_Shoppers_Intention.csv")
 
 
 

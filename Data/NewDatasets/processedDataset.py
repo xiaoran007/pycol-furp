@@ -36,6 +36,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("liver")
         self.datasetNameList.append("new_thyroid")
         self.datasetNameList.append("nursery")
+        self.datasetNameList.append("Online_Shoppers_Intention")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -58,6 +59,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["liver"] = [0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["new_thyroid"] = [0, 0, 0, 0, 0]
         self.datasetMetaDict["nursery"] = [1, 1, 1, 0, 1, 1, 1, 1]
+        self.datasetMetaDict["Online_Shoppers_Intention"] = self._Online_Shoppers_Intention()
 
     @staticmethod
     def _Company_Bankruptcy():
@@ -95,5 +97,14 @@ class ProcessedDataset(object):
         meta = list()
         for i in range(90):
             meta.append(0)
+        return meta
+
+    @staticmethod
+    def _Online_Shoppers_Intention():
+        meta = list()
+        for i in range(15):
+            meta.append(0)
+        meta.append(1)
+        meta.append(1)
         return meta
 
