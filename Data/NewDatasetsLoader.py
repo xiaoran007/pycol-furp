@@ -1,12 +1,18 @@
 import pandas as pd
+import os
 from sklearn.preprocessing import MinMaxScaler
-import NewDatasets.processedDataset as prosedDataset
+from Data.NewDatasets import processedDataset as prosedDataset
 
 
 class Dataset:
-    def __init__(self, dataset_name):
+    def __init__(self, dataset_name, cwd):
+        """
+        :param dataset_name: dataset name
+        :param cwd: os.path.dirname(__file__)
+        """
         self.DatasetName = dataset_name
         self.processedDatasetList = prosedDataset.ProcessedDataset().GetDatasetList()
+        self.cwd = cwd
 
     def GetDataset(self):
         if self.DatasetName not in self.processedDatasetList:
@@ -71,9 +77,10 @@ class Dataset:
             elif self.DatasetName == "wisconsin":
                 return self.load_wisconsin()
 
-    @staticmethod
-    def load(file_path):
+    def load(self, file_path):
+        os.chdir(os.path.dirname(__file__))
         dataset = pd.read_csv(file_path)
+        os.chdir(self.cwd)
         X = dataset.drop(["class"], axis=1)
         y = dataset["class"]
         y.astype('int')
