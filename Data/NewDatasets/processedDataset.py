@@ -40,6 +40,7 @@ class ProcessedDataset(object):
         self.datasetNameList.append("pima")
         self.datasetNameList.append("Satimage")
         self.datasetNameList.append("segment")
+        self.datasetNameList.append("shuttle")
 
     def _init_datasetMetaDict(self):
         self.datasetMetaDict["abalone"] = [1, 0, 0, 0, 0, 0, 0, 0]
@@ -66,6 +67,7 @@ class ProcessedDataset(object):
         self.datasetMetaDict["pima"] = [0, 0, 0, 0, 0, 0, 0, 0]
         self.datasetMetaDict["Satimage"] = self._Satimage()
         self.datasetMetaDict["segment"] = self._segment()
+        self.datasetMetaDict["shuttle"] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     @staticmethod
     def _Company_Bankruptcy():
