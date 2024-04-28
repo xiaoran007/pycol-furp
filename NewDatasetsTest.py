@@ -34,10 +34,10 @@ def run():
             complexity = Complexity(path, meta=a.datasetMetaDict[i],
                                     distance_func="default", file_type="csv")
             cm = complexity.CM()
-            print(f"dataset: {i} pass, c1: {cm}")
-            with open("./Data/NewDatasets/datasetCheck.json", "r") as f:
+            with open("./Data/NewDatasets/datasetCheck.json", "w") as f:
                 checked_list.append(i)
                 json.dump(checked_list, f)
+            print(f"dataset: {i} pass, c1: {cm}")
         except Exception as e:
             print(f"dataset: {i} fail")
             print(e)
