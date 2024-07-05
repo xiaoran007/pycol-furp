@@ -1,6 +1,6 @@
 from complexity.Complexity import Complexity
 
-complexity = Complexity("./Data/NewDatasets/abalone/abalone.csv", meta=[1, 0, 0, 0, 0, 0, 0, 0] ,distance_func="default", file_type="csv")
+complexity = Complexity("./Data/NewDatasets/abalone/abalone.csv", meta=[1, 0, 0, 0, 0, 0, 0, 0], distance_func="default", file_type="csv")
 
 
 print(complexity.T1())
