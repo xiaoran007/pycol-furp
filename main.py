@@ -1,30 +1,35 @@
 import csv
 from tqdm import tqdm
 from complexity.Complexity import Complexity
+from Data.NewDatasets.processedDataset import ProcessedDataset
 
-dataset_paths = {
-    'BankNote': 'EncodeDatasets/BankNote.arff',
-    'CreditApproval': 'EncodeDatasets/CreditApproval.arff',
-    'CreditRisk': 'EncodeDatasets/CreditRisk.arff',
-    'Ecoli': 'EncodeDatasets/Ecoli.arff',
-    'FakeBills': 'EncodeDatasets/FakeBills.arff'
-}
+# dataset_paths = {
+#     'BankNote': 'EncodeDatasets/BankNote.arff',
+#     'CreditApproval': 'EncodeDatasets/CreditApproval.arff',
+#     'CreditRisk': 'EncodeDatasets/CreditRisk.arff',
+#     'Ecoli': 'EncodeDatasets/Ecoli.arff',
+#     'FakeBills': 'EncodeDatasets/FakeBills.arff'
+# }
+
+processed_dataset = ProcessedDataset()
+dataset_names = processed_dataset.GetDatasetList()
+
 
 """
     Define meta, set numeric feature to 0 and categorical feature to 1
 """
-dataset_meta = {
-    'BankNote': [0, 0, 0, 0],
-    'CreditApproval': [1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
-    'CreditRisk': [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
-    'Ecoli': [0, 0, 0, 0, 0, 0, 0],
-    'FakeBills': [0, 0, 0, 0, 0, 0]
-}
+# dataset_meta = {
+#     'BankNote': [0, 0, 0, 0],
+#     'CreditApproval': [1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0],
+#     'CreditRisk': [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0],
+#     'Ecoli': [0, 0, 0, 0, 0, 0, 0],
+#     'FakeBills': [0, 0, 0, 0, 0, 0]
+# }
 
 """
     Save results to csv file
 """
-with open('dataset_results2.csv', 'w', newline='') as csvfile:
+with open('NewDataset_results.csv', 'w', newline='') as csvfile:
     fieldnames = ['Dataset', 'Feature overlap F1', 'Feature overlap F1v', 'Feature overlap F2', 'Feature overlap F3',
                   'Feature overlap F4', 'Feature overlap input_noise', 'Structural overlap N1', 'Structural overlap T1',
                   'Structural overlap LSC', 'Structural overlap Clust', 'Structural overlap DBC',
@@ -38,8 +43,11 @@ with open('dataset_results2.csv', 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
-    for dataset_name, dataset_path in tqdm(dataset_paths.items(), desc="Processing Datasets"):
-        dataset = Complexity(dataset_path, dataset_meta[dataset_name], distance_func="default", file_type="arff")
+    for dataset_name in tqdm(dataset_names, desc="Processing Datasets"):
+        if dataset_name in ['adult', 'Employee_Promote', 'letter', 'shuttle']:
+            continue
+
+        dataset = Complexity(f"./Data/NewDatasetsEncode/{dataset_name}.arff", processed_dataset.datasetMetaDict[dataset_name], distance_func="default", file_type="arff")
 
         row_data = {
             'Dataset': dataset_name
