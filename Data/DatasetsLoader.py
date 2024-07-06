@@ -102,7 +102,7 @@ class Dataset:
         cols = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'class']
         dataset = pd.read_csv('Datasets/Credit Approval/CreditApprovalDataSet.data', names=cols, delimiter=',')
         dataset = dataset.replace('?', np.nan)
-        dataset = dataset.dropna()
+        dataset = dataset.dropna().reset_index(drop=True)
         X = dataset.drop(['class'], axis=1)
         y = dataset['class']
         y = y.replace({'-': 0, '+': 1})
@@ -202,7 +202,7 @@ class Dataset:
     @staticmethod
     def load_PageBlockDel():
         dataset = pd.read_csv('Datasets/Page Blocks/page-block_new.csv', delimiter=',')
-        dataset = dataset.loc[~((dataset["class"] == 1) | (dataset["class"] == 4)), :].copy()
+        dataset = dataset.loc[~((dataset["class"] == 1) | (dataset["class"] == 4)), :].copy().reset_index(drop=True)
         X = dataset.drop(['class'], axis=1)
         y = dataset['class']
         y = y.replace({3: 1, 2: 0, 5: 0})
@@ -275,7 +275,7 @@ class Dataset:
     @staticmethod
     def load_Yeast():
         dataset = pd.read_csv("Datasets/Yeast/yeast_new.csv", delimiter=',')
-        dataset = dataset.loc[((dataset["class"] == "ME2") | (dataset["class"] == "CYT"))]
+        dataset = dataset.loc[((dataset["class"] == "ME2") | (dataset["class"] == "CYT"))].reset_index(drop=True)
         X = dataset.drop(["Sequence Name", "class"], axis=1)
         y = dataset['class']
         y = y.replace({"ME2": 1, "CYT": 0})
