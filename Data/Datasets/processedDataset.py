@@ -14,6 +14,10 @@ class ProcessedDataset(object):
         else:
             return self.datasetMetaDict[dataset_name]
 
+    @staticmethod
+    def GetSkipDatasetList():
+        return ["CreditCard", "PredictTerm"]
+
     def _init_datasetNameList(self):
         self.datasetNameList.append("Africa")
         self.datasetNameList.append("BankNote")
