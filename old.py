@@ -32,7 +32,7 @@ with open('Dataset_results.csv', 'w', newline='') as csvfile:
     writer.writeheader()
 
     for dataset_name in tqdm(dataset_names, desc="Processing Datasets"):
-        if dataset_name in ['adult', 'Employee_Promote', 'letter', 'shuttle']:
+        if dataset_name in processed_dataset.GetSkipDatasetList():
             continue
 
         dataset = Complexity(f"./Data/DatasetsEncode/{dataset_name}.arff", processed_dataset.datasetMetaDict[dataset_name], distance_func="default", file_type="arff")
