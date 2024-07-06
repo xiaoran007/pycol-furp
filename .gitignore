@@ -1,3 +1,7 @@
+# proj
+*.csv
+*.arff
+
 # macOS
 .DS_Store
 
